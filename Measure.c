@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
             perror("got error from getsockopt");
             return -1;
         }
-        printf("Current cc: %s\n", buf);//todo change
+        printf("Current cc: %s\n", buf);
 
         gettimeofday(&start, 0);
         use_file(new_sock);

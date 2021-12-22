@@ -33,7 +33,7 @@ int main(int argc, char **argv) {
     char buf[256];
     struct timeval start, end;
     long seconds, mic_sec;
-    long double reno_time, cubic_time, curr_time = 0;
+    long reno_time = 0, cubic_time = 0, curr_time1 = 0, curr_time2 = 0;
 
     struct sockaddr_in address;
     address.sin_family = AF_INET;
@@ -97,11 +97,11 @@ int main(int argc, char **argv) {
         gettimeofday(&end, 0);
         seconds = end.tv_sec - start.tv_sec;
         mic_sec = end.tv_usec - start.tv_usec;
-        curr_time += (double) (seconds + mic_sec * 1e-6);// most accurate
+        curr_time1 += (seconds + mic_sec * 1e-6);// most accurate
+        printf("FOR ORON %lf\n", curr_time1);
     }
-    cubic_time = (curr_time / 5);
-
-    curr_time = 0;
+    cubic_time = (curr_time1 / 5);
+    printf("cubic average time: %lf\n", cubic_time);
 
     strcpy(buf, "reno");
     len = strlen(buf);
@@ -136,12 +136,13 @@ int main(int argc, char **argv) {
         gettimeofday(&end, 0);
         seconds = end.tv_sec - start.tv_sec;
         mic_sec = end.tv_usec - start.tv_usec;
-        curr_time += (double) (seconds + mic_sec * 1e-6);// most accurate
+        curr_time2 += (seconds + mic_sec * 1e-6);// most accurate
+        printf("FOR ORON %lf\n", curr_time2);
 
     }
-    reno_time = (curr_time / 5);
-    printf("cubic average time: %Lf\n", cubic_time);
-    printf("reno average time: %Lf\n", reno_time);
+    reno_time = (curr_time2 / 5);
+    
+    printf("reno average time: %lf\n", reno_time);
     close(sock);
     return 0;
 }

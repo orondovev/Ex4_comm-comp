@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <time.h>
 #include <sys/time.h>
 
 #define TRUE 1
@@ -15,15 +16,15 @@
 // get the 1mb.txt file
 
 void read_file(int socket) {
-    char buff_file[1024] = {0};
+    char buff_file[256];
     int f;
 
     while (TRUE) {
-        f = recv(socket, buff_file, 1024, 0);
+        f = recv(socket, buff_file, 256, 0);
         if (f <= 0) {
             break;
         }
-        bzero(buff_file, 1024); //clearing the buffer
+        bzero(buff_file, 256); //clearing the buffer
     }
     return;
 }
@@ -32,8 +33,8 @@ void read_file(int socket) {
 int main(int argc, char **argv) {
     char buf[256];
     struct timeval start, end;
-    long seconds, mic_sec;
-    long reno_time = 0, cubic_time = 0, curr_time1 = 0, curr_time2 = 0;
+    long double reno_time = 0, cubic_time = 0;
+    long double curr_time1 = 0, curr_time2 = 0;
 
     struct sockaddr_in address;
     address.sin_family = AF_INET;
@@ -95,12 +96,11 @@ int main(int argc, char **argv) {
         gettimeofday(&start, 0);
         read_file(new_sock);
         gettimeofday(&end, 0);
-        seconds = end.tv_sec - start.tv_sec;
-        mic_sec = end.tv_usec - start.tv_usec;
-        curr_time1 += (seconds + mic_sec * 1e-6);// most accurate
-        printf("FOR ORON %lf\n", curr_time1);
+        double seconds = end.tv_sec - start.tv_sec;
+        double mic_sec = end.tv_usec - start.tv_usec;
+        curr_time1 += (double)(seconds + mic_sec * 1e-6);// most accurate
     }
-    cubic_time = (curr_time1 / 5);
+    cubic_time = (curr_time1 / 5.0);
     printf("cubic average time: %lf\n", cubic_time);
 
     strcpy(buf, "reno");
@@ -134,14 +134,13 @@ int main(int argc, char **argv) {
         gettimeofday(&start, 0);
         read_file(new_sock);
         gettimeofday(&end, 0);
-        seconds = end.tv_sec - start.tv_sec;
-        mic_sec = end.tv_usec - start.tv_usec;
-        curr_time2 += (seconds + mic_sec * 1e-6);// most accurate
-        printf("FOR ORON %lf\n", curr_time2);
+        double seconds = end.tv_sec - start.tv_sec;
+        double mic_sec = end.tv_usec - start.tv_usec;
+        curr_time2 += seconds + mic_sec * 1e-6;// most accurate
 
     }
-    reno_time = (curr_time2 / 5);
-    
+    reno_time = (curr_time2 / 5.0);
+
     printf("reno average time: %lf\n", reno_time);
     close(sock);
     return 0;

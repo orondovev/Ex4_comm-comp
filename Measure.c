@@ -14,11 +14,16 @@
 
 // get the 1mb.txt file
 
-void use_file(int socket) {
-    char buf[1024];
-    while (recv(socket, buf, 1024, 0) != 0)
-    {
-        bzero(buf, 1024); //clearing the buf
+void read_file(int socket) {
+    char buff_file[1024] = {0};
+    int f;
+
+    while (TRUE) {
+        f = recv(socket, buff_file, 1024, 0);
+        if (f <= 0) {
+            break;
+        }
+        bzero(buff_file, 1024); //clearing the buffer
     }
     return;
 }
@@ -70,7 +75,7 @@ int main(int argc, char **argv) {
 
     printf("Waiting for Connections..\n");
 
-    unsigned long addr_len = sizeof(address);
+    socklen_t addr_len = sizeof(address);
 
     //ready to receive first 5 packets.
     for (int i = 0; i < 5; i++) {
@@ -88,12 +93,11 @@ int main(int argc, char **argv) {
         printf("Current cc: %s\n", buf);//todo change
 
         gettimeofday(&start, 0);
-        use_file(new_sock);
+        read_file(new_sock);
         gettimeofday(&end, 0);
         seconds = end.tv_sec - start.tv_sec;
         mic_sec = end.tv_usec - start.tv_usec;
         curr_time += (double) (seconds + mic_sec * 1e-6);// most accurate
-
     }
     cubic_time = (curr_time / 5);
 
@@ -128,7 +132,7 @@ int main(int argc, char **argv) {
         printf("Current cc: %s\n", buf);
 
         gettimeofday(&start, 0);
-        use_file(new_sock);
+        read_file(new_sock);
         gettimeofday(&end, 0);
         seconds = end.tv_sec - start.tv_sec;
         mic_sec = end.tv_usec - start.tv_usec;

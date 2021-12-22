@@ -15,7 +15,7 @@ int main(int argc, char **argv) {
     server_address.sin_family = AF_INET;
     server_address.sin_port = htons(PORT); //cast as "host to network".
 
-    char file_buf[1025] = "";
+    char file_buf[1024] = "";
 
     char buf[256];
     socklen_t len;
@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
 
 
         //send the file to server (measure).
-        while (fgets(file_buf, 1025, fp) != NULL) {
+        while (fgets(file_buf, 1024, fp) != NULL) {
             long send_status = send(sock, file_buf, sizeof(file_buf), 0);
             if (send_status == -1) {
                 perror("Error reading the file data\n");
@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
             }
 
             //clear the file buffer.
-            bzero(file_buf, 1025);
+            bzero(file_buf, 1024);
         }
 
         printf("finished to send file\n");

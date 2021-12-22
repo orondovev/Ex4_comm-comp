@@ -25,47 +25,49 @@ int main(int argc, char **argv) {
     char *f_name = "1mb.txt";
 
 
-    //init a new socket and open the connection with server -->
-    sock = socket(AF_INET, SOCK_STREAM, 0);
-    socket(AF_INET, SOCK_STREAM, 0);
-    if (sock == -1) {
-        perror("socket error\n");
-        return -1;
-    }
-    printf("socket has created.\n");
 
-    //converting ip address to binary.
-    int convert_ip_status = inet_pton(AF_INET, "10.0.0.27", &server_address.sin_addr);
-    if (convert_ip_status <= 0) {
-        printf("Invalid address \n");
-        return -1;
-    }
-
-
-    //open and read from given file.
-    fp = fopen(f_name, "r");
-    if (fp == NULL) {
-        perror("error reading the given file");
-        exit(1);
-    }
-
-    //connecting to server.
-    int con_status = connect(sock, (struct sockaddr *) &server_address, sizeof(server_address));
-    if (con_status < 0) {
-        perror("Connection Failed\n");
-        return -1;
-    }
-    printf("successfully connected to measure\n");
-
-    len = sizeof(buf);
-    if (getsockopt(sock, IPPROTO_TCP, TCP_CONGESTION, buf, &len) != 0) {
-        perror("getsockopt\n");
-        return -1;
-    }
 
     printf("Current cc: %s\n", buf);
     //start the first deliveries.
     for (int i = 0; i < 10; ++i) {
+
+        //init a new socket and open the connection with server -->
+        sock = socket(AF_INET, SOCK_STREAM, 0);
+        socket(AF_INET, SOCK_STREAM, 0);
+        if (sock == -1) {
+            perror("socket error\n");
+            return -1;
+        }
+        printf("socket has created.\n");
+
+        //converting ip address to binary.
+        int convert_ip_status = inet_pton(AF_INET, "10.0.0.27", &server_address.sin_addr);
+        if (convert_ip_status <= 0) {
+            printf("Invalid address \n");
+            return -1;
+        }
+
+
+        //open and read from given file.
+        fp = fopen(f_name, "r");
+        if (fp == NULL) {
+            perror("error reading the given file");
+            exit(1);
+        }
+
+        //connecting to server.
+        int con_status = connect(sock, (struct sockaddr *) &server_address, sizeof(server_address));
+        if (con_status < 0) {
+            perror("Connection Failed\n");
+            return -1;
+        }
+        printf("successfully connected to measure\n");
+
+        len = sizeof(buf);
+        if (getsockopt(sock, IPPROTO_TCP, TCP_CONGESTION, buf, &len) != 0) {
+            perror("getsockopt\n");
+            return -1;
+        }
 
         // the 5 last packets will send in "reno" cc;
         if (i >= 5) {
